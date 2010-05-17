@@ -1,0 +1,13 @@
+IMG:
+====
+
+bmp_s: Start
+bmp_l: Length
+
+[01] == BM
+	BMP, xor = 0
+else
+	JPG, xor = (byte) [0] ^ 255
+
+xor != 0
+	buf ^ xor
