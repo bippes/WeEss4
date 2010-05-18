@@ -11,3 +11,8 @@ else
 
 xor != 0
 	buf ^ xor
+
+AVI:
+====
+
+vid_s: 0
