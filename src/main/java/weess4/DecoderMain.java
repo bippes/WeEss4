@@ -1,10 +1,8 @@
 package weess4;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.net.URL;
 
 public class DecoderMain {
@@ -19,20 +17,20 @@ public class DecoderMain {
 	}
 
 	private void decodeAvi(String inputFile, String outputFile, int length) throws Exception {
-		InputStreamReader inReader = new FileReader(inputFile);
+		FileInputStream fin = new FileInputStream(inputFile);
 		File outFile = new File(outputFile);
 		System.out.println("Out: " + outFile.getAbsolutePath());
-		OutputStreamWriter outWriter = new FileWriter(outFile);
+		FileOutputStream fout = new FileOutputStream(outFile);
 
 		final int bufLen = 8192;
 		boolean useXor = false;
 
-		char[] buf = new char[bufLen];
+		byte[] buf = new byte[bufLen];
 		boolean first = true;
 		int totalRead = 0;
 
 		while (totalRead < length) {
-			int readChars = inReader.read(buf, 0, bufLen);
+			int readChars = fin.read(buf, 0, bufLen);
 
 			if (readChars > -1) {
 				if (first) {
@@ -43,7 +41,7 @@ public class DecoderMain {
 
 				if (useXor) {
 					for (int i = 0; i < readChars; i++) {
-						buf[i] = (char) (((int) buf[i]) ^ AVI_XOR_MASK);
+						buf[i] = (byte) (((int) buf[i]) ^ AVI_XOR_MASK);
 					}
 				}
 
@@ -59,22 +57,32 @@ public class DecoderMain {
 						buf[2] = (char) 1;
 					}
 
-					String sbuf = String.copyValueOf(buf, 0, readChars);
-					sbuf = sbuf.replace("VSPX", "DIVX");
-					sbuf = sbuf.replace("vidsvspx", "vidsdivx");
-					sbuf.getChars(0, readChars, buf, 0);
+					if (buf[112] == 'v' && buf[113] == 's' && buf[114] == 'p' && buf[115] == 'x') {
+						buf[112] = 'd';
+						buf[113] = 'i';
+						buf[114] = 'v';
+						buf[115] = 'x';
+					}
+					if (buf[188] == 'V' && buf[189] == 'S' && buf[190] == 'P' && buf[191] == 'X') {
+						buf[188] = 'D';
+						buf[189] = 'I';
+						buf[190] = 'V';
+						buf[191] = 'X';
+					}
 
 					first = false;
 				}
 
-				outWriter.write(buf, 0, readChars);
+				fout.write(buf, 0, readChars);
 
 				totalRead += readChars;
 			}
 		}
 
-		inReader.close();
-		outWriter.close();
+		fin.close();
+		fout.close();
+
+		System.out.println("Done");
 	}
 
 	/**
@@ -86,8 +94,8 @@ public class DecoderMain {
 		try {
 			URL url = main.loadFile("4/33.4");
 
-//			main.decodeAvi(url.getPath(), "33.avi", 326805746);
-			main.decodeAvi(url.getPath(), "33.avi", 8192);
+//			main.decodeAvi(url.getPath(), "33.avi", 8192);
+			main.decodeAvi(url.getPath(), "33.avi", 326805746);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
