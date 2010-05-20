@@ -18,53 +18,59 @@ public class DecoderMain {
 		return resource;
 	}
 
-	private void decodeAvi(String inputFile, String outputFile) throws Exception {
+	private void decodeAvi(String inputFile, String outputFile, int length) throws Exception {
 		InputStreamReader inReader = new FileReader(inputFile);
 		File outFile = new File(outputFile);
 		System.out.println("Out: " + outFile.getAbsolutePath());
 		OutputStreamWriter outWriter = new FileWriter(outFile);
 
-		final int bufLen = 250000;
+		final int bufLen = 8192;
 		boolean useXor = false;
 
 		char[] buf = new char[bufLen];
-		int readChars = inReader.read(buf, 0, bufLen);
 		boolean first = true;
+		int totalRead = 0;
 
-		if (readChars > -1) {
-			if (first) {
-				if (buf[0] == 'V' && buf[1] == 'S' && buf[2] == 'P') {
-					useXor = true;
+		while (totalRead < length) {
+			int readChars = inReader.read(buf, 0, bufLen);
+
+			if (readChars > -1) {
+				if (first) {
+					if (buf[0] == 'V' && buf[1] == 'S' && buf[2] == 'P') {
+						useXor = true;
+					}
 				}
+
+				if (useXor) {
+					for (int i = 0; i < readChars; i++) {
+						buf[i] = (char) (((int) buf[i]) ^ AVI_XOR_MASK);
+					}
+				}
+
+				if (first) {
+					if (buf[3] == 'F') {
+						buf[0] = 'R';
+						buf[1] = 'I';
+						buf[2] = 'F';
+					}
+					else {
+						buf[0] = (char) 0;
+						buf[1] = (char) 0;
+						buf[2] = (char) 1;
+					}
+
+					String sbuf = String.copyValueOf(buf, 0, readChars);
+					sbuf = sbuf.replace("VSPX", "DIVX");
+					sbuf = sbuf.replace("vidsvspx", "vidsdivx");
+					sbuf.getChars(0, readChars, buf, 0);
+
+					first = false;
+				}
+
+				outWriter.write(buf, 0, readChars);
+
+				totalRead += readChars;
 			}
-
-			if (useXor) {
-				for (int i = 0; i < readChars; i++) {
-					buf[i] = (char) (((int) buf[i]) ^ AVI_XOR_MASK);
-				}
-			}
-
-			if (first) {
-				if (buf[3] == 'F') {
-					buf[0] = 'R';
-					buf[1] = 'I';
-					buf[2] = 'F';
-				}
-				else {
-					buf[0] = (char) 0;
-					buf[1] = (char) 0;
-					buf[2] = (char) 1;
-				}
-
-				String sbuf = String.copyValueOf(buf, 0, readChars);
-				sbuf = sbuf.replace("VSPX", "DIVX");
-				sbuf = sbuf.replace("vidsvspx", "vidsdivx");
-				sbuf.getChars(0, readChars, buf, 0);
-
-				first = false;
-			}
-
-			outWriter.write(buf, 0, readChars);
 		}
 
 		inReader.close();
@@ -80,7 +86,8 @@ public class DecoderMain {
 		try {
 			URL url = main.loadFile("4/33.4");
 
-			main.decodeAvi(url.getPath(), "33.avi");
+//			main.decodeAvi(url.getPath(), "33.avi", 326805746);
+			main.decodeAvi(url.getPath(), "33.avi", 8192);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
