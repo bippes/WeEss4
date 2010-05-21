@@ -16,7 +16,7 @@ public class DecoderMain {
 		return resource;
 	}
 
-	private void decodeAvi(String inputFile, String outputFile, int length) throws Exception {
+	private void decodeAvi(String inputFile, String outputFile, int length, int encodedLength) throws Exception {
 		FileInputStream fin = new FileInputStream(inputFile);
 		File outFile = new File(outputFile);
 		System.out.println("Out: " + outFile.getAbsolutePath());
@@ -33,13 +33,15 @@ public class DecoderMain {
 			int readChars = fin.read(buf, 0, bufLen);
 
 			if (readChars > -1) {
+				totalRead += readChars;
+
 				if (first) {
 					if (buf[0] == 'V' && buf[1] == 'S' && buf[2] == 'P') {
 						useXor = true;
 					}
 				}
 
-				if (useXor) {
+				if (useXor && totalRead <= encodedLength) {
 					for (int i = 0; i < readChars; i++) {
 						buf[i] = (byte) (((int) buf[i]) ^ AVI_XOR_MASK);
 					}
@@ -74,8 +76,6 @@ public class DecoderMain {
 				}
 
 				fout.write(buf, 0, readChars);
-
-				totalRead += readChars;
 			}
 		}
 
@@ -95,7 +95,7 @@ public class DecoderMain {
 			URL url = main.loadFile("4/33.4");
 
 //			main.decodeAvi(url.getPath(), "33.avi", 8192);
-			main.decodeAvi(url.getPath(), "33.avi", 326805746);
+			main.decodeAvi(url.getPath(), "33.avi", 326805746, 1500000);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
