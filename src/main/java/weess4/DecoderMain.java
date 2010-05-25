@@ -82,7 +82,7 @@ public class DecoderMain {
 		fin.close();
 		fout.close();
 
-		System.out.println("Done");
+		System.out.println("Done.");
 	}
 
 	/**
