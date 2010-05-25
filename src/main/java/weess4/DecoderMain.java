@@ -32,7 +32,10 @@ public class DecoderMain {
 		while (totalRead < length) {
 			int readChars = fin.read(buf, 0, bufLen);
 
-			// TODO Adjust read characters to not exceed _length_.
+			// Do not exceed _encodedLength_.
+			if (totalRead + readChars > length) {
+			    readChars = length - totalRead;
+			}
 
 			if (readChars > -1) {
 				if (first) {
