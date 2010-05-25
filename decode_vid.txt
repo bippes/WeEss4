@@ -17,11 +17,4 @@ AVI:
 
 vid_s: 0
 
-
-
-This is xine (X11 gui) - a free video player v0.99.6.
-(c) 2000-2007 The xine Team.
-[mpeg4 @ 0xaf300a20]ac-tex damaged at 52 18
-[mpeg4 @ 0xaf300a20]Error at MB: 1150
-[mpeg4 @ 0xaf300a20]concealing 957 DC, 957 AC, 957 MV errors
-
+33 length: 0x137AA8EA (+ Header 4 Bytes?)

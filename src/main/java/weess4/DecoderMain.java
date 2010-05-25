@@ -32,6 +32,8 @@ public class DecoderMain {
 		while (totalRead < length) {
 			int readChars = fin.read(buf, 0, bufLen);
 
+			// TODO Adjust read characters to not exceed _length_.
+
 			if (readChars > -1) {
 				if (first) {
 					if (buf[0] == 'V' && buf[1] == 'S' && buf[2] == 'P') {
