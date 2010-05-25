@@ -32,17 +32,19 @@ public class DecoderMain {
 		while (totalRead < length) {
 			int readChars = fin.read(buf, 0, bufLen);
 
-			if (readChars > -1) {
-				totalRead += readChars;
+			// TODO Adjust read characters to not exceed _length_.
 
+			if (readChars > -1) {
 				if (first) {
 					if (buf[0] == 'V' && buf[1] == 'S' && buf[2] == 'P') {
 						useXor = true;
+
+						System.out.println("Using XOR to decode file.");
 					}
 				}
 
 				if (useXor && totalRead <= encodedLength) {
-					for (int i = 0; i < readChars; i++) {
+					for (int i = 0; i < readChars && totalRead + i < encodedLength; i++) {
 						buf[i] = (byte) (((int) buf[i]) ^ AVI_XOR_MASK);
 					}
 				}
@@ -52,11 +54,15 @@ public class DecoderMain {
 						buf[0] = 'R';
 						buf[1] = 'I';
 						buf[2] = 'F';
+
+						System.out.println("Found RIFF Header.");
 					}
 					else {
 						buf[0] = (char) 0;
 						buf[1] = (char) 0;
 						buf[2] = (char) 1;
+
+						System.out.println("Not using RIFF Header.");
 					}
 
 					if (buf[112] == 'v' && buf[113] == 's' && buf[114] == 'p' && buf[115] == 'x') {
@@ -64,25 +70,33 @@ public class DecoderMain {
 						buf[113] = 'i';
 						buf[114] = 'v';
 						buf[115] = 'x';
+
+						System.out.println("Found vspx.");
 					}
 					if (buf[188] == 'V' && buf[189] == 'S' && buf[190] == 'P' && buf[191] == 'X') {
 						buf[188] = 'D';
 						buf[189] = 'I';
 						buf[190] = 'V';
 						buf[191] = 'X';
+
+						System.out.println("Found VSPX.");
 					}
 
 					first = false;
 				}
 
 				fout.write(buf, 0, readChars);
+
+				totalRead += readChars;
+
+				System.out.print(".");
 			}
 		}
 
 		fin.close();
 		fout.close();
 
-		System.out.println("Done.");
+		System.out.println("\r\nDone.");
 	}
 
 	/**
