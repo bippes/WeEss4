@@ -106,8 +106,6 @@ public class DecoderMain {
 				fout.write(buf, 0, readChars);
 
 				totalRead += readChars;
-
-				System.out.print(".");
 			}
 		}
 
