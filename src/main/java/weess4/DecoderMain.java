@@ -1,7 +1,5 @@
 package weess4;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -71,15 +69,15 @@ public class DecoderMain {
 
 						System.out.println("Not using RIFF Header.");
 					}
-					
+
 					// Read the length
 					int l = (int) buf[4] & 0xFF;
 					l += ((int) buf[5] & 0xFF) << 8;
                     l += ((int) buf[6] & 0xFF) << 16;
                     l += ((int) buf[7] & 0xFF) << 24;
-                    
+
 					System.out.println("Read length: " + l);
-					
+
 					length = l;
 
 					if (buf[112] == 'v' && buf[113] == 's' && buf[114] == 'p' && buf[115] == 'x') {
