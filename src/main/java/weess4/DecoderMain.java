@@ -18,7 +18,9 @@ public class DecoderMain {
 
 	private void decodeAvi(String inputFile, String outputFile, int encodedLength) throws Exception {
 	    File inFile = new File(inputFile);
+	    System.out.println("In : " + inFile.getAbsolutePath());
 		FileInputStream fin = new FileInputStream(inFile);
+
 		File outFile = new File(outputFile);
 		System.out.println("Out: " + outFile.getAbsolutePath());
 		FileOutputStream fout = new FileOutputStream(outFile);
@@ -75,6 +77,7 @@ public class DecoderMain {
 					l += ((int) buf[5] & 0xFF) << 8;
                     l += ((int) buf[6] & 0xFF) << 16;
                     l += ((int) buf[7] & 0xFF) << 24;
+                    l += 8;
 
 					System.out.println("Read length: " + l);
 
@@ -120,10 +123,16 @@ public class DecoderMain {
 	public static void main(String[] args) {
 		DecoderMain main = new DecoderMain();
 
-		try {
-			URL url = main.loadFile("4/33.4");
+		if (args.length != 2) {
+			System.out.println("Syntax error, expecting two parameters: <inputFile> <outputFile>");
+			System.exit(1);
+		}
 
-            main.decodeAvi(url.getPath(), "33.avi", 1500000);
+		String inputFile = args[0];
+		String outputFile = args[1];
+
+		try {
+            main.decodeAvi(inputFile, outputFile, 1500000);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
