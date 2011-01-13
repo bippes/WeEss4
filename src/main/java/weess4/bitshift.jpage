@@ -1,0 +1,13 @@
+int byteIndex = 3;
+long x = ((long)0xFF << (byteIndex * 8));
+System.out.println("Byte Index: " + byteIndex + ", x: " + x);
+
+long xor = 0x7DFA6C01;
+long xorb = (xor & x);
+long bshift = 8 * byteIndex;
+long xorbb = xorb >> bshift;
+System.out.println("(" + xor + " & " + x + ") >> " + bshift + " = " + xorb + ", " + xorbb);
+
+int xxx = 0x6C00;
+int xxxor = (xxx & 0xFF00) >> 8;
+System.out.println(xxx + " = " + xxxor);

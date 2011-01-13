@@ -1,5 +1,7 @@
 src/main/resources/php/*
 src/main/resources/4/*
+src/main/resources/v/*
 target
 *.*~
 *.avi
+.DS_Store
